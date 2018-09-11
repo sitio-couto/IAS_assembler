@@ -1,0 +1,23 @@
+.org 0
+LOAD "x1"
+rotulo1:
+RSH
+.align 1
+rotulo2:
+ADD  "x2"
+STOR "rotulo1"
+JUMP "cont"
+.align 2
+cont:
+RSH
+STOR "av"
+JMP+ "rotulo2"
+.align 1
+x1: .word 0
+x2: .word 2
+.align 2
+av: .word 0000000000
+.org 0
+vet: .wfill 10 1
+.align 2
+vm: .word x1

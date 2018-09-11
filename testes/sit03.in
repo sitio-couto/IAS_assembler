@@ -1,0 +1,7 @@
+.org 0x000
+.wfill 3 0x0E00400001
+loop:
+LOAD "0x000"
+LOAD "0x001"
+STOR "0x002"
+JUMP "loop"

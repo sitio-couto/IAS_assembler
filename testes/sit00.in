@@ -1,0 +1,10 @@
+.set INICIO 0x0FF
+.org 0x0FF
+begin:
+LOAD "rotulo2"
+rotulo1:
+RSH
+rotulo2:
+rotulo3:
+.align 2
+.word rotulo3

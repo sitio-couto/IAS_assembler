@@ -1,0 +1,11 @@
+.word 0xFFFFF00000
+.org 2
+JMP+ "_rot"
+.org 1
+ADD "0"
+_rot:
+.align 3
+.wfill 5 _rot
+.align 1023
+.set dac 0xDAC00DAC
+.word dac

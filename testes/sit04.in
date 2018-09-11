@@ -1,0 +1,17 @@
+.set INICIO 0x000
+.org 0x000
+laco:
+LOAD "x1"
+laco2:
+ADD  "x2"
+JUMP "cont"
+.align 1
+cont:
+RSH
+STOR "av"
+JMP+ "laco2"
+.align 1
+x1: .word 0000000000
+x2: .word 0000000002
+av: .word 0000000000
+vm: .word x1

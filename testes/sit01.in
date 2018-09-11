@@ -1,0 +1,14 @@
+.org 0x000
+LOAD  "var1"
+loop:
+ADD   "var2"
+STOR  "var3"
+JMP+ "loop"
+var1:
+.word 0x0D0050A023
+var2:
+.word 1
+var3:
+.word 2
+end:
+JUMP  "end"

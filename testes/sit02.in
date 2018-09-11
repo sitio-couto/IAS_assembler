@@ -1,0 +1,7 @@
+.org 0x101
+JUMP "0x400"
+loop1:
+JUMP "loop1"
+.align 2
+loop2:
+JUMP "loop2"

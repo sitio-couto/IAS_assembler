@@ -1,0 +1,156 @@
+#define MAX_DIR 5
+#define MAX_INST 17
+
+#include "montador.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+char* isolaToken(char* linha, int* pos);
+Token alocaToken(char* palavra, TipoDoToken tipo, int linha);
+int comparaComReservas(char* tok, const char** reservas, int tamReservas);
+int ehUmaLetra(int valorAscii);
+int ehUmNumero(int valorAscii);
+int verificarNumero(char* linha, int contaLinha);
+int verifcarPalavra
+(
+	char* linha, 
+	int contaLinha, 
+	const char** reservaInstrucoes, 
+	int* pos
+);
+
+/*
+ * Argumentos:
+ *  entrada: cadeia de caracteres com o conteudo do arquivo de entrada.
+ *  tamanho: tamanho da cadeia.
+ * Retorna:
+ *  1 caso haja erro na montagem;
+ *  0 caso não haja erro.
+ */
+int processarEntrada(char* entrada, unsigned tamanho) {
+
+	int cursor = 0, pos = 0, contaLinha = 0, i = 0;
+	char* linha = NULL;
+	char* palavra = NULL;
+	const char quebraLinha = '\n';
+
+	const char* reservaDiretivas[MAX_INST] = {
+		"LOAD","LOAD-","LOAD|","LOADmq","LOADmq_mx","STOR","JUMP",
+		"JMP+","ADD","ADD|","SUB","SUB|","MUL","DIV","LSH","RSH","STORA"
+	};
+	const char* reservaInstrucoes[MAX_DIR] = {
+		".set",".org",".align",".wfill",".word"
+	};
+
+	//TODO o que fazer em relacao ao TAB?
+	while (cursor < tamanho) {
+		linha = strtok(entrada, &quebraLinha);	//Isola linha por linha.
+		++contaLinha;	//Conta as linhas (comecando do 1).
+
+		for (pos = 0; pos < strlen(linha); ++pos) {
+			switch (linha[pos]) {
+				case '#':	//Pula o restante da linha atual.
+					pos = strlen(linha);
+					break;
+				case '.':	//Confere a diretiva a ser passada.
+					palavra = isolaToken(linha, &pos);
+					if (comparaComReservas(palavra, reservaDiretivas, MAX_DIR))
+						adicionarToken(alocaToken(palavra, Diretiva, contaLinha));
+					break;
+				default:	//Caso seja um letra ou um numero.
+					if (ehUmaLetra(linha[pos])) {
+						if (verifcarPalavra(linha, contaLinha, reservaInstrucoes, &pos));
+					}else if (ehUmNumero(linha[pos])) {
+						verificarNumero(linha, contaLinha);
+					}
+					break;
+			}
+		}
+		
+	}
+	
+	imprimeListaTokens();
+
+	return 0;
+}
+
+char* isolaToken(char* linha, int* pos) {
+	int inicio = (*pos);
+	char* tok = malloc(sizeof(char) * 20);
+
+	while ((linha[(*pos)] != ' ')&&(linha[(*pos)] != '\n')) {
+		tok[(*pos) - inicio] = linha[(*pos)];
+		++(*pos);
+	}
+
+	tok[(*pos) - inicio] = '\0';
+	++(*pos);
+
+	return tok;
+}
+
+Token alocaToken(char* palavra, TipoDoToken tipo, int linha) {
+	Token novo;
+	novo.linha = linha;
+	novo.palavra = palavra;
+	novo.tipo = tipo;
+
+	return novo;
+}
+
+int comparaComReservas(char* tok, const char** reservas, int tamReservas) {
+	int i;
+
+	for (i = 0; i < tamReservas; ++i) {	//Busca a diretiva da tabela de reservas.
+		if (strcmp(tok, reservas[i])) 
+			return 1;
+
+		return 0;
+}
+
+int ehUmaLetra(int valorAscii){
+	if((valorAscii>='A')&&(valorAscii<='Z'))
+		return 1;
+	else if((valorAscii>='a')&&(valorAscii<='a'))
+		return 1;
+	else 
+		return 0;
+}
+
+int ehUmNumero(int valorAscii){
+	if((valorAscii>='0')&&(valorAscii<='9'))
+		return 1;
+	else
+		return 0;
+}
+
+int verifcarPalavra
+(
+	char* linha, 
+	int contaLinha, 
+	const char** reservaInstrucoes, 
+	int* pos
+)
+{
+	char* palavra = isolaToken(linha, pos);
+
+	if (palavra[strlen(palavra) - 1] == ':') {	//Verifica se eh um rotulo a ser definido.
+		adicionarToken(alocaToken(palavra, DefRotulo, contaLinha));
+		//Novo rotulo definido.
+		return 1;
+	}else if (comparaComReservas(palavra, reservaInstrucoes, MAX_INST)) {	//Busca a instrucao na tabela de reservas.
+		adicionarToken(alocaToken(palavra, Instrucao, contaLinha));
+		//Armazenada a nova diretiva.
+		return 1;
+	} else {	//Cria um nome por exclusao de possibilidades.
+		adicionarToken(alocaToken(palavra, Nome, contaLinha);
+		return 1;
+	}
+
+	free(instrucao);
+
+	return 0;	//TODO caso de erro.
+}
+
+
